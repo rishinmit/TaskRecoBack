@@ -8,17 +8,14 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
-// Connect to MongoDB
-const MONGO_URI = process.env.MONGO_URI || 'your-mongodb-connection-string';
 
-mongoose.connect(MONGO_URI, {
-  serverSelectionTimeoutMS: 5000, // Reduce timeout to 5 sec
-});
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+}).then(() => console.log('MongoDB Connected'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
-mongoose.connection.on('connected', () => console.log('✅ MongoDB Connected'));
-mongoose.connection.on('error', (err) => console.error('❌ MongoDB Error:', err));
 
-// Define a schema for tasks
 const TaskSchema = new mongoose.Schema({
   date: String,
   time: String,
@@ -26,7 +23,7 @@ const TaskSchema = new mongoose.Schema({
 });
 const Task = mongoose.model('Task', TaskSchema);
 
-// API endpoint to save tasks
+
 app.post('/save-task', async (req, res) => {
   try {
     const { date, time, task } = req.body;
@@ -41,7 +38,7 @@ app.post('/save-task', async (req, res) => {
   }
 });
 
-// API endpoint to get all tasks
+
 app.get('/get-tasks', async (req, res) => {
   try {
     const tasks = await Task.find();
@@ -51,7 +48,7 @@ app.get('/get-tasks', async (req, res) => {
   }
 });
 
-// API endpoint to delete a task
+
 app.delete('/delete-task/:id', async (req, res) => {
   try {
     const { id } = req.params;
@@ -74,7 +71,7 @@ app.delete('/delete-task/:id', async (req, res) => {
   }
 });
 
-// API endpoint to update a task
+
 app.put('/update-task/:id', async (req, res) => {
     try {
       const { id } = req.params;
