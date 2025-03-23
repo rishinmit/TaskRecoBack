@@ -9,11 +9,14 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => console.log('MongoDB Connected'))
-  .catch(err => console.error('MongoDB connection error:', err));
+const MONGO_URI = process.env.MONGO_URI || 'your-mongodb-connection-string';
+
+mongoose.connect(MONGO_URI, {
+  serverSelectionTimeoutMS: 5000, // Reduce timeout to 5 sec
+});
+
+mongoose.connection.on('connected', () => console.log('✅ MongoDB Connected'));
+mongoose.connection.on('error', (err) => console.error('❌ MongoDB Error:', err));
 
 // Define a schema for tasks
 const TaskSchema = new mongoose.Schema({
