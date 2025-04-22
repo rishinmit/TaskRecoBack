@@ -28,7 +28,8 @@ app.post('/save-task', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Missing fields' });
     }
 
-    const datetime = new Date(`${date} ${time}`);
+    const dateSort = new Date(`${date}`);
+    const timeSort = new Date(`${time}`);
 
     const newTask = new Task({ date, time, task, datetime });
     await newTask.save();
@@ -40,7 +41,7 @@ app.post('/save-task', async (req, res) => {
 
 app.get('/get-tasks', async (req, res) => {
   try {
-    const tasks = await Task.find().sort({ datetime: 1 });
+    const tasks = await Task.find().sort({ dateSort: 1, timeSort: 1 });
     res.json(tasks);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching tasks' });
